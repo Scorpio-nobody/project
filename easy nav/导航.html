@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		#floors{
+			position: fixed;
+			left: 10px;
+			top: 50%;
+			height:300px;
+			margin-top: -151px;
+			border:1px solid #ccc;
+			opacity: 0;
+			filter:alpha(opacity=0);
+			display: none;
+		}
+		#floors li{
+			font-size: 14px;
+			width: 70px;
+			text-align: center;
+			list-style: none;
+			line-height: 29px;
+			border-bottom: 1px solid #ccc;
+		}
+		#floors li.last{
+			border: none;
+			line-height: 30px;
+		}
+		#header{
+			height: 1000px;
+		}
+		#content{
+			margin:0 auto;
+			width: 980px;
+		}
+		#content li{
+			list-style: none;
+			height: 500px;
+			border-bottom: 1px solid blue;
+		}
+		#content ul{
+			border-top: 1px solid blue;
+		}
+		#floors li.active{
+			background: red;
+		}
+	</style>
+</head>
+<body>
+	<!-- 左边的侧边栏 -->
+	<ul id="floors">
+		<li class="active">享品质1</li>
+		<li>享品质2</li>
+		<li>享品质3</li>
+		<li>享品质4</li>
+		<li>享品质5</li>
+		<li>享品质6</li>
+		<li>享品质7</li>
+		<li>享品质8</li>
+		<li>享品质9</li>
+		<li class="last">享品质10</li>
+	</ul>
+	<div id="header">
+		
+	</div>
+	<div id="content">
+		<ul >
+			<li>享品质1</li>
+			<li>享品质2</li>
+			<li>享品质3</li>
+			<li>享品质4</li>
+			<li>享品质5</li>
+			<li>享品质6</li>
+			<li>享品质7</li>
+			<li>享品质8</li>
+			<li>享品质9</li>
+			<li>享品质10</li>
+		</ul>
+	</div>
+	<script type="text/javascript" src="js/animate.js"></script>
+	<script type="text/javascript">
+	  //  简化代码
+	  var $ = function(id){
+	  	return document.getElementById(id);
+	  }
+	  // 得到导航栏
+	  var daohang = $("floors");
+		var i = 0;
+		var timer =null;
+		var lis = daohang.getElementsByTagName("li");
+		// 添加点击事件
+		for(var j = 0,l=lis.length;j<l;j++){
+			// 记住j
+			lis[j].idx = j;
+			lis[j].onclick = function(){
+				// 根据点击的li的序号去计算scrollTop值
+				var value = this.idx * 501 + 1000;
+				var me = this;
+				scrollTo(value,1000,function(){
+					for(var i = 0;i<lis.length;i++){
+						lis[i].className = "";
+					}
+					lis[me.idx].className = "active"
+				})
+			}
+		}
+window.onscroll = function(){
+	// 当卷动页面到达一定的高度的时候让导航栏淡入
+	var scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+	//判断移动
+	if(scrollTop>= 1000){
+		// 判断节流锁
+		  clearTimeout(timer);
+		  console.log(i++,">1000")
+			timer = setTimeout(function(){
+				daohang.style.display = "block";
+				// 导航栏淡入
+				animate(daohang,{opacity:1},1000,function(){
+				})
+			},200)
+			// 判断scrollTop值到底在哪个位置
+			var idx =parseInt(( scrollTop -900)/500);
+			for(var x = 0;x<lis.length;x++){
+				lis[x].className = "";
+			}
+			lis[idx].className = "active"
+			
+	}else{
+		console.log(i++,"<1000")
+		clearTimeout(timer);
+		timer = setTimeout(function(){
+			animate(daohang,{opacity:0},1000,function(){
+				daohang.style.display ="none"
+			})
+		},200)
+	}
+}
+		/* 写一个函数实现scrollTop值的动画*/
+		function scrollTo(target,time,callback){
+			// 定义一个频率
+			var pinlv = 20;
+			// 定义一个计数器
+			var count = 0;
+			// 获取当前的值
+			var now = document.body.scrollTop || document.documentElement.scrollTop;
+			// 获取总长度
+			var allLength = target-now;
+			// 获取总次数
+			var allCount = time/pinlv;
+			// 获取步长
+			var step = allLength / allCount;
+			// 定义timer
+			var timer = null;
+			timer = setInterval(function(){
+				// 计数器累加
+				count++;
+				// 赋值
+				document.body.scrollTop = document.documentElement.scrollTop = now + step*count;
+				if(count>= allCount){
+					clearInterval(timer);
+					document.body.scrollTop = document.documentElement.scrollTop = target;
+					callback && callback();
+				}
+			},pinlv)
+		}
+
+	</script>
+</body>
+</html>
